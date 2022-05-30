@@ -1,9 +1,9 @@
 package core;
 
 import exceptions.InvalidDateFormat;
-import exceptions.models.Employee;
-import exceptions.models.EmployeePair;
-import exceptions.models.Project;
+import models.Employee;
+import models.EmployeePair;
+import models.Project;
 import utils.MyDateUtil;
 
 import java.io.BufferedReader;
