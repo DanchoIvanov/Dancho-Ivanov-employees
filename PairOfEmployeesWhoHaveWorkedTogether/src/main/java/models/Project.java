@@ -4,6 +4,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+/*
+    POJO class used by the application to store information about project id,
+    and a set of employees. Project has a unique ID.
+ */
+
 public class Project {
     private int id;
     private TreeSet<Employee> employees;

@@ -3,6 +3,11 @@ package models;
 import java.time.LocalDate;
 import java.util.Objects;
 
+/*
+    POJO class used by the application to store information about employee id,
+    start and end date for a project. Employee has a unique ID and is compared by it.
+ */
+
 public class Employee implements Comparable<Employee>{
     private int id;
     private LocalDate startDate;

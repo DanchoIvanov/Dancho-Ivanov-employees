@@ -13,7 +13,10 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.*;
 
-import static java.time.temporal.ChronoUnit.DAYS;
+/*
+    This class contains the main application logic. It reads the provided file and makes the
+    necessary calculations to return the result.
+ */
 
 public class Application {
     private Path path;
@@ -27,6 +30,7 @@ public class Application {
         this.setPath(path);
     }
 
+    //public method used by the user form to set the result.
     public String solve(){
         try {
             readFile();
@@ -36,6 +40,10 @@ public class Application {
         }
     }
 
+    // It goes through every project and creates and updates
+    // an EmployeePair for all employees who worked together at any point.
+    // Returns result as String in format (Integer) EmployeeID1, (Integer) EmployeeID2, (Integer) days
+    // or "No pair found" if there is no employees who worked together.
     private String getResult() {
         EmployeePair longestTimeSpentTogether = null;
 
@@ -46,30 +54,7 @@ public class Application {
                     Employee employee1 = employees.get(i);
                     Employee employee2 = employees.get(j);
 
-                    LocalDate togetherSince = null;
-                    LocalDate togetherUntil = null;
-
-                    if (employee1.getStartDate().minusDays(1).isBefore(employee2.getEndDate())
-                    && employee1.getStartDate().plusDays(1).isAfter(employee2.getStartDate())) {
-                        togetherSince = employee1.getStartDate();
-                    } else if (employee2.getStartDate().minusDays(1).isBefore(employee1.getEndDate())
-                            && employee2.getStartDate().plusDays(1).isAfter(employee1.getStartDate())) {
-                        togetherSince = employee2.getStartDate();
-                    }
-
-                    if (employee1.getEndDate().plusDays(1).isAfter(employee2.getStartDate())
-                    && employee1.getEndDate().minusDays(1).isBefore(employee2.getEndDate())) {
-                        togetherUntil = employee1.getEndDate();
-                    } else if (employee2.getEndDate().plusDays(1).isAfter(employee1.getStartDate())
-                            && employee2.getEndDate().minusDays(1).isBefore(employee1.getEndDate())) {
-                        togetherUntil = employee2.getEndDate();
-                    }
-
-                    long days = 0;
-
-                    if (togetherSince != null && togetherUntil != null) {
-                        days = DAYS.between(togetherSince, togetherUntil) + 1;
-                    }
+                    long days = MyDateUtil.calculateDaysWorkingTogether(employee1, employee2);
 
                     if (days > 0) {
                         String key = employee1.getId() + " " + employee2.getId();
@@ -87,6 +72,16 @@ public class Application {
         return longestTimeSpentTogether == null ? "No pair found" : longestTimeSpentTogether.toString();
     }
 
+
+    // Reads the file and creates Map of Projects.
+    // Adds to error log for every line that could not be processed:
+    //  - "Invalid project or employee ID" - The input is for the ID is not a number or the file encoding is unsupported.
+    //  - "Unsupported date format" - the provided date is in unsupported format.
+    //  - "Employee is already added to this project" - there is more than one entity for that pair employee - project
+    //  - "Invalid Date input" - the input for DateFrom is "NULL" or is a date after DateTo.
+    //  - "Not enough information provided" - the line contains less than 4 elements.
+    // Throws IOException if it can not read the file
+    // and IllegalArgumentException if the file extension is not .csv
     private void readFile() throws IllegalArgumentException, IOException {
         BufferedReader reader;
         String line;
@@ -109,6 +104,10 @@ public class Application {
             try {
                 String[] tokens = line.split(String.valueOf(currentDelimiter));
 
+                if (tokens.length < 4) {
+                    throw new InvalidDateFormat("Not enough information provided");
+                }
+
                 int employeeId;
                 int projectId;
 
@@ -128,8 +127,7 @@ public class Application {
 
                 projects.putIfAbsent(projectId, new Project(projectId));
                 if (!projects.get(projectId).getEmployees().add(new Employee(employeeId, startDate, endDate))) {
-                    errorLog.append("Employee is already added to this project:").append(System.lineSeparator());
-                    errorLog.append(line).append(System.lineSeparator());
+                    throw new InvalidDateFormat("Employee is already added to this project:");
                 };
             } catch (InvalidDateFormat | NumberFormatException e) {
                 errorLog.append(e.getMessage()).append(":").append(System.lineSeparator());
@@ -139,6 +137,9 @@ public class Application {
         }
     }
 
+    // Tries to split the first line by the listed above delimiters.
+    // Checks if  the .csv file has 4 elements in it.
+    // Returns the delimiter if so else throws IllegalArgumentException
     private char identifyDelimiter(String line) throws IllegalArgumentException {
         for (Character delimiter : delimiters) {
             List<String> result = List.of(line.split(String.valueOf(delimiter)));

@@ -2,6 +2,13 @@ package models;
 
 import java.util.Objects;
 
+/*
+    POJO class used by the application to store information about employees pairs.
+    It contains 2 ids, one for every employee. Pair has 2 employee ids which given in certain order
+    make the object unique. Example: EmployeePair(id1, id2) != EmployeePair(id2, id1).
+    Employee pair is a comparable object and is compared by the days.
+ */
+
 public class EmployeePair implements Comparable<EmployeePair> {
     int id1;
     int id2;

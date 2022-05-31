@@ -6,7 +6,6 @@ import static org.junit.Assert.assertEquals;
 
 public class ApplicationTests {
 
-
     private final String WRONG_FILE_EXTENSION = "src/main/resources/WrongFileFormat.txt";
     private final String WRONG_FILE_TEMPLATE = "src/main/resources/WrongTemplate.csv";
     private final String WRONG_FILE_DELIMITER = "src/main/resources/WrongTemplate.csv";
@@ -17,6 +16,7 @@ public class ApplicationTests {
     private final String NO_OVERLAP = "src/main/resources/NoOverLapDifferentDateFormats.csv";
     private final String OVERLAP_ON_2_PROJECTS = "src/main/resources/OverlapOn2Projects.csv";
     private final String REVERSED_DATES = "src/main/resources/ReversedDates.csv";
+    private final String LESS_DATA_PROVIDED = "src/main/resources/LessDataProvided.csv";
 
     public ApplicationTests() {}
 
@@ -116,6 +116,17 @@ public class ApplicationTests {
                 "1;1;2020/11/13;11.11.2020;\r\n" +
                 "Invalid Date input:\r\n" +
                 "2;1;NULL;11-26-20;\r\n";
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void lessDataProvided() {
+        Application main = new Application(LESS_DATA_PROVIDED);
+        main.solve();
+        String actual = main.getErrorLog();
+        String expected = "Not enough information provided:\r\n" +
+                "2;\r\n";
 
         assertEquals(expected, actual);
     }
