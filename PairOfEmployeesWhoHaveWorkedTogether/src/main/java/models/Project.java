@@ -2,6 +2,7 @@ package models;
 
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /*
@@ -11,19 +12,19 @@ import java.util.TreeSet;
 
 public class Project {
     private int id;
-    private TreeSet<Employee> employees;
+    private TreeMap<Integer, Employee> employees;
 
     public int getId() {
         return id;
     }
 
-    public Set<Employee> getEmployees() {
+    public TreeMap<Integer, Employee> getEmployees() {
         return employees;
     }
 
     public Project(int id) {
         this.id = id;
-        this.employees = new TreeSet<>();
+        this.employees = new TreeMap<>();
     }
 
     @Override

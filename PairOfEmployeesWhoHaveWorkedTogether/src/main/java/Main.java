@@ -20,8 +20,8 @@ import java.awt.*;
         - The result comes in format (Integer) EmployeeID1, (Integer) EmployeeID2, (Integer) days.
             * If one employee DateFrom is the same with another DateTo and the share a project they hava a day.
             * If a pair of employees worked together on more than one project in a same day
-            they get a day for every single project.
-            * If one employee has more than one entity on same project only the  first is counted.
+            they get only a day together no matter how many projects they have worked on.
+            * If one employee has more than one entity on same project it would add only the period that is not already added.
     4.2 If no employees worked together on common projects
         - the result gives the message "No pair found".
     4.3 Errors:
@@ -31,10 +31,8 @@ import java.awt.*;
     5. Error log - gives information for every line that could not been proceeded.
         - "Invalid project or employee ID" - The input is for the ID is not a number or the file encoding is unsupported.
         - "Unsupported date format" - the provided date is in unsupported format.
-        - "Employee is already added to this project" - there is more than one entity for that pair employee - project
         - "Invalid Date input" - the input for DateFrom is "NULL" or is a date after DateTo.
         - "Not enough information provided" - the line contains less than 4 elements.
-
  */
 
 public class Main {

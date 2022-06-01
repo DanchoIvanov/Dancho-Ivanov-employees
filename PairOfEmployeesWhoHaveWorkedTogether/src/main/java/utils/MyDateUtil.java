@@ -6,12 +6,12 @@ import models.Employee;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-
-import static java.time.temporal.ChronoUnit.DAYS;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
     This class is used by the application class and  provides logic for the date parsing and
-     time employees worked together.
+     epoch day calculating.
  */
 
 public class MyDateUtil {
@@ -76,34 +76,40 @@ public class MyDateUtil {
         throw new InvalidDateFormat("Unsupported date format");
     }
 
-    // calculates how many days the employees have worked together and returns the result as long.
-    // If one employee start date is the same as the other end date the result is 1 day.
-    public static long calculateDaysWorkingTogether (Employee employee1, Employee employee2) {
-        LocalDate togetherSince = null;
-        LocalDate togetherUntil = null;
+    // Returns Set of numbers representing matching epoch days.
+    // Iterates through the shortest of the 2 employees set and checks if the other one contains the same date.
+    public static Set<Long> getMatchingEpochDaysSet (Set<Long> set1, Set<Long> set2) {
+       Set<Long> result = new HashSet<>();
 
-        if (employee1.getStartDate().minusDays(1).isBefore(employee2.getEndDate())
-                && employee1.getStartDate().plusDays(1).isAfter(employee2.getStartDate())) {
-            togetherSince = employee1.getStartDate();
-        } else if (employee2.getStartDate().minusDays(1).isBefore(employee1.getEndDate())
-                && employee2.getStartDate().plusDays(1).isAfter(employee1.getStartDate())) {
-            togetherSince = employee2.getStartDate();
+       Set<Long> shorterSet = set1;
+       Set<Long> longerSet = set2;
+
+       if (shorterSet.size() > longerSet.size()) {
+           shorterSet = set2;
+           longerSet = set1;
+       }
+
+        for (Long aLong : shorterSet) {
+            if (longerSet.contains(aLong)) {
+                result.add(aLong);
+            }
         }
 
-        if (employee1.getEndDate().plusDays(1).isAfter(employee2.getStartDate())
-                && employee1.getEndDate().minusDays(1).isBefore(employee2.getEndDate())) {
-            togetherUntil = employee1.getEndDate();
-        } else if (employee2.getEndDate().plusDays(1).isAfter(employee1.getStartDate())
-                && employee2.getEndDate().minusDays(1).isBefore(employee1.getEndDate())) {
-            togetherUntil = employee2.getEndDate();
+       return result;
+    }
+
+    // Returns Set of numbers representing every day in between the provided dates. Both values are inclusive.
+    // If startDate > endDate returns empty Set;
+    public static Set<Long> getSetOfEpochDays(LocalDate startDateInclusive, LocalDate endDateInclusive) {
+        Set<Long> result = new HashSet<>();
+
+        long start = startDateInclusive.toEpochDay();
+        long end = endDateInclusive.toEpochDay();
+
+        for (long i = start; i <= end; i++) {
+            result.add(i);
         }
 
-        long days = 0;
-
-        if (togetherSince != null && togetherUntil != null) {
-            days = DAYS.between(togetherSince, togetherUntil) + 1;
-        }
-
-        return days;
+        return result;
     }
 }

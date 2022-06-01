@@ -70,12 +70,10 @@ public class ApplicationTests {
     }
 
     @Test
-    public void DuplicateEmployeeProjectReturnsCorrectMessage() {
+    public void DuplicateEmployeeProjectReturnsCorrectPair() {
         Application main = new Application(DUPLICATE_EMPLOYEE_ON_PROJECT);
-        main.solve();
-        String actual = main.getErrorLog();
-        String expected = "Employee is already added to this project:\r\n" +
-                "1;1;2020-11-20;2022-11-22;\r\n";
+        String actual = main.solve();
+        String expected = "1, 2, 5";
 
         assertEquals(expected, actual);
     }
@@ -99,10 +97,10 @@ public class ApplicationTests {
     }
 
     @Test
-    public void OverlapON2Projects() {
+    public void OverlapOn2Projects() {
         Application main = new Application(OVERLAP_ON_2_PROJECTS);
         String actual = main.solve();
-        String expected = "1, 2, 6";
+        String expected = "1, 2, 3";
 
         assertEquals(expected, actual);
     }

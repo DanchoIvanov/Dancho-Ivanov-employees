@@ -48,19 +48,20 @@ public class Application {
         EmployeePair longestTimeSpentTogether = null;
 
         for (Project project : projects.values()) {
-            List<Employee> employees = project.getEmployees().stream().toList();
+            List<Employee> employees = new ArrayList<>(project.getEmployees().values());
             for (int i = 0; i < employees.size() - 1; i++) {
                 for (int j = i + 1; j < employees.size(); j++) {
                     Employee employee1 = employees.get(i);
                     Employee employee2 = employees.get(j);
 
-                    long days = MyDateUtil.calculateDaysWorkingTogether(employee1, employee2);
+                    Set<Long> daysWorkingTogether = MyDateUtil.getMatchingEpochDaysSet(
+                            employee1.getWorkDays(), employee2.getWorkDays());
 
-                    if (days > 0) {
+                    if (daysWorkingTogether.size() > 0) {
                         String key = employee1.getId() + " " + employee2.getId();
 
                         pairs.putIfAbsent(key, new EmployeePair(employee1.getId(), employee2.getId()));
-                        pairs.get(key).setDays(pairs.get(key).getDays() + days);
+                        pairs.get(key).addDays(daysWorkingTogether);
 
                         if (longestTimeSpentTogether == null || longestTimeSpentTogether.compareTo(pairs.get(key)) < 0) {
                             longestTimeSpentTogether = pairs.get(key);
@@ -77,7 +78,6 @@ public class Application {
     // Adds to error log for every line that could not be processed:
     //  - "Invalid project or employee ID" - The input is for the ID is not a number or the file encoding is unsupported.
     //  - "Unsupported date format" - the provided date is in unsupported format.
-    //  - "Employee is already added to this project" - there is more than one entity for that pair employee - project
     //  - "Invalid Date input" - the input for DateFrom is "NULL" or is a date after DateTo.
     //  - "Not enough information provided" - the line contains less than 4 elements.
     // Throws IOException if it can not read the file
@@ -126,9 +126,11 @@ public class Application {
                 }
 
                 projects.putIfAbsent(projectId, new Project(projectId));
-                if (!projects.get(projectId).getEmployees().add(new Employee(employeeId, startDate, endDate))) {
-                    throw new InvalidDateFormat("Employee is already added to this project:");
-                };
+                Map<Integer, Employee> employees = projects.get(projectId).getEmployees();
+
+                employees.putIfAbsent(employeeId, new Employee(employeeId));
+                employees.get(employeeId).addWorkDays(startDate, endDate);
+
             } catch (InvalidDateFormat | NumberFormatException e) {
                 errorLog.append(e.getMessage()).append(":").append(System.lineSeparator());
                 errorLog.append(line).append(System.lineSeparator());

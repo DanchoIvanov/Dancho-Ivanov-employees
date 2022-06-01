@@ -1,10 +1,13 @@
 package models;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /*
     POJO class used by the application to store information about employees pairs.
-    It contains 2 ids, one for every employee. Pair has 2 employee ids which given in certain order
+    It contains 2 ids, one for every employee and Set of numbers representing the epoch days they worked together.
+    Pair has 2 employee ids which given in certain order
     make the object unique. Example: EmployeePair(id1, id2) != EmployeePair(id2, id1).
     Employee pair is a comparable object and is compared by the days.
  */
@@ -12,11 +15,12 @@ import java.util.Objects;
 public class EmployeePair implements Comparable<EmployeePair> {
     int id1;
     int id2;
-    long days;
+    Set<Long> daysTogether;
 
     public EmployeePair(int id1, int id2) {
         this.id1 = id1;
         this.id2 = id2;
+        daysTogether = new HashSet<>();
     }
 
     public int getId1() {
@@ -27,13 +31,14 @@ public class EmployeePair implements Comparable<EmployeePair> {
         return id2;
     }
 
-    public long getDays() {
-        return days;
+    public int getDays() {
+        return daysTogether.size();
     }
 
-    public void setDays(long days) {
-        this.days = days;
+    public void addDays(Set<Long> daysToAdd) {
+        this.daysTogether.addAll(daysToAdd);
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -50,11 +55,11 @@ public class EmployeePair implements Comparable<EmployeePair> {
 
     @Override
     public int compareTo(EmployeePair o) {
-        return Long.compare(this.getDays(), o.getDays());
+        return Integer.compare(this.getDays(), o.getDays());
     }
 
     @Override
     public String toString() {
-        return id1 + ", " + id2 + ", " + days;
+        return id1 + ", " + id2 + ", " + this.getDays();
     }
 }

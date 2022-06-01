@@ -1,7 +1,12 @@
 package models;
 
+import utils.MyDateUtil;
+
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /*
     POJO class used by the application to store information about employee id,
@@ -10,25 +15,24 @@ import java.util.Objects;
 
 public class Employee implements Comparable<Employee>{
     private int id;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private Set<Long> workDays;
 
     public int getId() {
         return id;
     }
 
-    public LocalDate getStartDate() {
-        return startDate;
+    public Set<Long> getWorkDays() {
+        return Collections.unmodifiableSet(workDays);
     }
 
-    public LocalDate getEndDate() {
-        return endDate;
+    public void addWorkDays (LocalDate startDate, LocalDate endDate) {
+        Set<Long> daysToAdd = MyDateUtil.getSetOfEpochDays(startDate, endDate);
+        this.workDays.addAll(daysToAdd);
     }
 
-    public Employee(int id, LocalDate startDate, LocalDate endDate) {
+    public Employee(int id) {
         this.id = id;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.workDays = new HashSet<>();
     }
 
     @Override
